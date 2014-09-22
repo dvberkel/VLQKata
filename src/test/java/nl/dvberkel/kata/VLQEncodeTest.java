@@ -1,11 +1,13 @@
 package nl.dvberkel.kata;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,21 +19,35 @@ import static org.junit.Assert.assertThat;
 public class VLQEncodeTest {
     private final BigInteger source;
     private final byte[] destination;
+    private Kata kata;
 
     public VLQEncodeTest(VLQEncodeTestCase testCase) {
         this.source = testCase.getSource();
         this.destination = testCase.getDestination();
     }
 
-    @Test
-    public void shouldEncodeCorrectly() {
-        assertThat(new Kata().encode(source), is(destination));
+    @Before
+    public void createKata() {
+        kata = new Kata();
     }
 
-    @Parameterized.Parameters
+    @Test
+    public void shouldEncodeCorrectly() {
+        assertThat(kata.encode(source), is(destination));
+    }
+
+    @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> data() {
         List<Object[]> testCases = new ArrayList<Object[]>();
-        testCases.add(verifyThat(0).encodesAs(0b0));
+        for (int b0 = 0; b0 < 128; b0++) {
+            testCases.add(verifyThat(b0).encodesAs(b0));
+        }
+        for (int b1 = 1; b1 < 128; b1++) {
+            for (int b0 = 0; b0 < 128; b0++) {
+                testCases.add(verifyThat(128 * b1 + b0).encodesAs(b1 | 0b10000000, b0));
+            }
+        }
+        testCases.add(verifyThat(128*128 * 1 + 128 * 0 + 0).encodesAs(1 | 0b10000000, 0 | 0b10000000, 0));
         return testCases;
     }
 }
@@ -67,5 +83,10 @@ class VLQEncodeTestCase {
 
     public byte[] getDestination() {
         return destination;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("encode(%s) should be %s", source, Arrays.toString(destination));
     }
 }

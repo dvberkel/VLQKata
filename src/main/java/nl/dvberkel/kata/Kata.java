@@ -6,13 +6,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 
-public class Kata {
+public class Kata implements VLQEncoder {
     private static final BigInteger base = BigInteger.valueOf(128);
 
-    public byte[] encode(int n) {
-        return encode(BigInteger.valueOf(n));
-    }
-
+    @Override
     public byte[] encode(BigInteger n) {
         BigInteger[] result  = n.divideAndRemainder(base);
         ByteArrayOutputStream output = new ByteArrayOutputStream();

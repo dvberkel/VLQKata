@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 public class VLQEncodeTest {
     private final BigInteger source;
     private final byte[] destination;
-    private Kata kata;
+    private VLQEncoder kata;
 
     public VLQEncodeTest(VLQEncodeTestCase testCase) {
         this.source = testCase.getSource();
